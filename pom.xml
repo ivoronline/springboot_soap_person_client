@@ -83,6 +83,7 @@
               </goals>
             </execution>
           </executions>
+
           <configuration>
             <schemaLanguage>WSDL</schemaLanguage>
             <generatePackage>com.ivoronline.soap</generatePackage>
