@@ -2,48 +2,43 @@ package com.ivoronline.springboot_soap_person_client;
 
 import com.ivoronline.soap.GetPersonRequest;
 import com.ivoronline.soap.GetPersonResponse;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
-import org.springframework.ws.WebServiceMessage;
-import org.springframework.ws.client.core.WebServiceMessageCallback;
+import org.springframework.stereotype.Component;
 import org.springframework.ws.client.core.WebServiceTemplate;
 import org.springframework.ws.client.core.support.WebServiceGatewaySupport;
-import org.springframework.ws.soap.SoapMessage;
 
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URISyntaxException;
-
+@Component
 public class PersonClient extends WebServiceGatewaySupport {
 
   //PROPERTIES
-  String wsURL    = "http://localhost:8080/ws";
-  String wsdlURL  = "http://localhost:8080/ws/person";
-  String endpoint = "http://ivoronline.com/soap/GetPersonRequest"; //Namespace + localPart
+  String generatedClasses   = "com.ivoronline.soap";
+  String webServiceEndpoint = "http://localhost:8080/PersonWebService";
 
   //==========================================================================
   // GET PERSON
   //==========================================================================
-  //Input Parameters are used to create Request Object which is marshalled into XML Request.
-  //SOAP Envelope, Header and Body are added around generated XML Request.
-  public GetPersonResponse getPerson(Integer id) throws URISyntaxException, IOException {
+  // Input Parameters are only used to create Custom Request Object
+  // Request Object will be marshalled into XML Request
+  // SOAP Envelope, Header and Body will be added around generated XML Request
+  // This is all done by calling marshalSendAndReceive()
+  public GetPersonResponse getPerson(Integer id) {
 
     //CREATE REQUEST OBJECT
     GetPersonRequest getPersonRequest = new GetPersonRequest();
-                     getPersonRequest.setId(id);
+                     getPersonRequest.setId(id);  //Set some Parameters
 
     //POINT MARSHALLER TO GENERATED CLASSES
     Jaxb2Marshaller  marshaller = new Jaxb2Marshaller();
-                     marshaller.setContextPath("com.ivoronline.soap");
+                     marshaller.setContextPath(generatedClasses);
 
     //CONFIGURE CLIENT
-    setDefaultUri  (wsURL);
+    setDefaultUri  (webServiceEndpoint);
     setMarshaller  (marshaller);
     setUnmarshaller(marshaller);
 
     //SEND REQUEST
     WebServiceTemplate template = getWebServiceTemplate();
-    GetPersonResponse  response = (GetPersonResponse) template.marshalSendAndReceive(wsdlURL, getPersonRequest);
+    GetPersonResponse  response = (GetPersonResponse) template.marshalSendAndReceive(getPersonRequest);
 
     //RETURN RESPONSE OBJECT
     return response;
@@ -51,3 +46,4 @@ public class PersonClient extends WebServiceGatewaySupport {
   }
 
 }
+
